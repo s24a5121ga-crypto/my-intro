@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>競馬使いすぎ防止サポーター AI (Prototype v1) - やなしょん</title>
+    <meta name="description" content="AIがあなたの競馬収支を診断し、お金の使いすぎを防止・アドバイスするサポーターツールプロトタイプ。">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Noto+Sans+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- ヘッダー -->
+        <header>
+            <div class="badge">Prototype v1.0</div>
+            <h1>競馬使いすぎ防止サポーター AI</h1>
+            <p class="description">本日の投資と回収を入力し、AIによるスマート診断と予算コントロールを受けましょう。</p>
+        </header>
+
+        <!-- 本日のダッシュボード -->
+        <section class="card dashboard" id="dashboard-section">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+                本日の戦績サマリー
+            </h2>
+            <div class="dashboard-grid">
+                <div class="summary-card" id="card-total-investment">
+                    <div class="label">本日総投資</div>
+                    <div class="value" id="total-investment">¥0</div>
+                </div>
+                <div class="summary-card" id="card-total-return">
+                    <div class="label">本日総回収</div>
+                    <div class="value" id="total-return">¥0</div>
+                </div>
+                <div class="summary-card" id="card-total-balance">
+                    <div class="label">トータル収支</div>
+                    <div class="value" id="total-balance">¥0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- アプリのメイングリッド -->
+        <div class="app-grid">
+            <!-- 左カラム：入力と診断結果 -->
+            <div class="input-and-result">
+                <!-- 入力カード -->
+                <section class="card">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        戦績を記録する
+                    </h2>
+                    <form id="race-form" onsubmit="return false;">
+                        <div class="input-group">
+                            <label for="race-name">レース名（任意）</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="race-name" placeholder="例: 東京11R 日本ダービー" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="investment-input">投資金額</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="investment-input" placeholder="例: 10000" min="0" step="100" required>
+                                <span class="unit">円</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="return-input">払い戻し金額</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="return-input" placeholder="例: 8500" min="0" step="100" required>
+                                <span class="unit">円</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-diagnose" class="btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22" x2="12" y2="12"></line></svg>
+                            AI診断を実行
+                        </button>
+                    </form>
+                </section>
+
+                <!-- 診断結果レポートカード -->
+                <section class="card result-card" id="result-card">
+                    <div class="result-header">
+                        <span class="result-title" id="result-title">診断完了</span>
+                        <span class="result-income" id="result-income">±0円</span>
+                    </div>
+                    <div class="result-description" id="result-detail-text">
+                        収支の評価レポートがここに表示されます。
+                    </div>
+                    <div class="analysis-radar">
+                        <div class="radar-stat">
+                            <span class="radar-label">自己コントロール力</span>
+                            <div class="radar-bar-bg">
+                                <div class="radar-bar" id="radar-control"></div>
+                            </div>
+                        </div>
+                        <div class="radar-stat">
+                            <span class="radar-label">資金効率性</span>
+                            <div class="radar-bar-bg">
+                                <div class="radar-bar" id="radar-efficiency"></div>
+                            </div>
+                        </div>
+                        <div class="radar-stat">
+                            <span class="radar-label">リスク回避度</span>
+                            <div class="radar-bar-bg">
+                                <div class="radar-bar" id="radar-risk"></div>
+                            </div>
+                        </div>
+                        <div class="radar-stat">
+                            <span class="radar-label">マインド冷静度</span>
+                            <div class="radar-bar-bg">
+                                <div class="radar-bar" id="radar-mind"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 右カラム：AIキャラクター -->
+            <div class="ai-section">
+                <section class="card" style="height: 100%; display: flex; flex-direction: column;">
+                    <div class="ai-character-container">
+                        <div class="ai-avatar" id="ai-avatar">🤖</div>
+                        <div class="ai-name">BUDGET AI</div>
+                    </div>
+
+                    <!-- AIのメッセージ吹き出し -->
+                    <div class="ai-bubble">
+                        <!-- 分析ローディング -->
+                        <div class="ai-loader" id="ai-loader">
+                            <div class="spinner"></div>
+                            <div class="loader-text" id="loader-step">分析開始中...</div>
+                        </div>
+                        
+                        <!-- AIからのリアルテキスト -->
+                        <div class="ai-advice-content" id="ai-advice">
+競馬でお金を使い過ぎていませんか？
+ここに本日の投資額と払い戻し額を入力してください。
+
+あなたのプレイスタイルを分析し、熱くなりすぎないための客観的なアドバイスを提供します。
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- 過去の戦績ログ -->
+        <section class="card history-section">
+            <div class="history-header">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                    本日の履歴リスト
+                </h2>
+                <button class="btn-clear" id="btn-clear-history">全履歴クリア</button>
+            </div>
+            
+            <div class="history-table-container">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>レース名</th>
+                            <th>投資額</th>
+                            <th>回収額</th>
+                            <th>収支</th>
+                            <th style="width: 50px; text-align: center;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list">
+                        <!-- JavaScriptで動的生成 -->
+                    </tbody>
+                </table>
+                <div class="no-history" id="no-history-msg">
+                    本日の戦績はまだ記録されていません。
+                </div>
+            </div>
+        </section>
+
+        <!-- フッター -->
+        <footer>
+            <p>&copy; 2026 やなしょん / 競馬使いすぎ防止サポーター AI</p>
+            <a href="../../index.html" class="back-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                ポートフォリオに戻る
+            </a>
+        </footer>
+    </div>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
